@@ -53,6 +53,32 @@ def create_user():
     session.commit()
     return 'Created User'
 
+@app.route('/static/authenticate', methods = ['POST'])
+def authenticate():
+    username = request.form['username']
+    password = request.form['password']
+
+    session = db.getSession(engine)
+    users = session.query(entities.User)
+
+    for user in users:
+        if user.username == username and user.password == password:
+            return render_template("success.html")
+    return render_template("fail.html")
+
+
+@app.route('/static/authenticate2', methods = ['POST'])
+def authenticate2():
+    username = request.form['username']
+    password = request.form['password']
+
+    session = db.getSession(engine)
+
+    try:
+        user = session.query(entities.User).filter(entities.User.username == username).filter(entities.User.password == password).one()
+        return render_template("success.html")
+    except Exception:
+        render_template("fail.html")
 
 @app.route('/users', methods = ['PUT'])
 def update_user():
